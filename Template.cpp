@@ -19,5 +19,7 @@
 
 using namespace std;
 
+const double EPS = 1e-9;
+
 typedef long long Long;
 #define whole(xs) xs.begin(), xs.end()
