@@ -60,5 +60,15 @@ struct Segment : Line {
     static bool DoIntersect(const Segment& l, const Segment& m) {
         return Point::CCW(l.a, l.b, m.a) * Point::CCW(l.a, l.b, m.b) <= 0 &&
                Point::CCW(m.a, m.b, l.a) * Point::CCW(m.a, m.b, l.b) <= 0;
+    static double Distance(const Segment& s, const Point& p) {
+        Point q = s.Projection(p);
+        Segment t(p, q);
+        if (DoIntersect(s, t)) return t.length();
+        return min(Point::Distance(s.a, p), Point::Distance(s.b, p));
+    }
+    static double Distance(const Segment& s, const Segment& t) {
+        if (DoIntersect(s, t)) return 0;
+        return min( min(Distance(s, t.a), Distance(s, t.b)),
+                    min(Distance(t, s.a), Distance(t, s.b)) );
     }
 };
