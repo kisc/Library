@@ -57,9 +57,10 @@ struct Line {
 };
 struct Segment : Line {
     Segment(Point a, Point b) : Line(a, b) {}
-    static bool DoIntersect(const Segment& l, const Segment& m) {
-        return Point::CCW(l.a, l.b, m.a) * Point::CCW(l.a, l.b, m.b) <= 0 &&
-               Point::CCW(m.a, m.b, l.a) * Point::CCW(m.a, m.b, l.b) <= 0;
+    static bool DoIntersect(const Segment& s, const Segment& t) {
+        return Point::CCW(s.a, s.b, t.a) * Point::CCW(s.a, s.b, t.b) <= 0 &&
+               Point::CCW(t.a, t.b, s.a) * Point::CCW(t.a, t.b, s.b) <= 0;
+    }
     static double Distance(const Segment& s, const Point& p) {
         Point q = s.Projection(p);
         Segment t(p, q);
