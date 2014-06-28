@@ -14,7 +14,7 @@ struct Point {
     static double Distance(const Point& a, const Point& b) {
         return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
     }
-    static double Dot(const Point& a, const Point& b) { return a.x * b.y + a.y * b.x; }
+    static double Dot(const Point& a, const Point& b) { return a.x * b.x + a.y * b.y; }
     static double Cross(const Point& a, const Point& b) { return a.x * b.y - a.y * b.x; }
     static int CCW(Point a, Point b, Point c){
         b = b - a; c = c - a;
