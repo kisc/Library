@@ -55,3 +55,10 @@ struct Line {
         return l.a + (l.b - l.a) * (Point::Cross(m.b - m.a, m.b - l.a) / d);
     }
 };
+struct Segment : Line {
+    Segment(Point a, Point b) : Line(a, b) {}
+    static bool DoIntersect(const Segment& l, const Segment& m) {
+        return Point::CCW(l.a, l.b, m.a) * Point::CCW(l.a, l.b, m.b) <= 0 &&
+               Point::CCW(m.a, m.b, l.a) * Point::CCW(m.a, m.b, l.b) <= 0;
+    }
+};
