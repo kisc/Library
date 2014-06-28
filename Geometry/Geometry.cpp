@@ -56,7 +56,9 @@ struct Line {
     }
 };
 struct Segment : Line {
+    Segment() {}
     Segment(Point a, Point b) : Line(a, b) {}
+    double length() const { return (b - a).norm(); }
     static bool DoIntersect(const Segment& s, const Segment& t) {
         return Point::CCW(s.a, s.b, t.a) * Point::CCW(s.a, s.b, t.b) <= 0 &&
                Point::CCW(t.a, t.b, s.a) * Point::CCW(t.a, t.b, s.b) <= 0;
