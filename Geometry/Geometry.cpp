@@ -44,6 +44,11 @@ struct Line {
         double n = s.norm();
         return a + s * (Point::Dot(s, t) / (n * n));
     }
+    Point Reflection(const Point& p) const {
+        Point q = Projection(p);
+        Point v = q - p;
+        return q + v;
+    }
     static Point Intersection(const Line& l, const Line& m) {
         double d = Point::Cross(m.b - m.a, l.b - l.a);
         assert(abs(d) >= EPS); // 線分が平行でないことを確認
