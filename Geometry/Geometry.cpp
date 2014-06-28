@@ -75,3 +75,15 @@ struct Segment : Line {
                     min(Distance(t, s.a), Distance(t, s.b)) );
     }
 };
+
+struct Polygon {
+    vector<Point> vs;
+    Polygon(const vector<Point>& vs) : vs(vs) {}
+    double area() const {
+        double Ret = 0;
+        for (int i = 0; i < vs.size(); i++) {
+            Ret += Point::Cross(vs[i], vs[(i + 1) % vs.size()]);
+        }
+        return Ret * 0.5;
+    }
+};
