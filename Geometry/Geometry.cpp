@@ -1,8 +1,8 @@
 struct Point {
     double x, y;
     Point(double x = 0, double y = 0) : x(x), y(y) {}
-    double norm() { return sqrt(x * x + y * y); }
-    Point unit() {
+    double norm() const { return sqrt(x * x + y * y); }
+    Point unit() const {
         double l = norm();
         return Point(x / l, y / l);
     }
