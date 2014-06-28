@@ -24,10 +24,6 @@ struct Point {
         if (b.norm() < c.norm()) return -2;    // a--b--c 直線
         return 0;                              // a--c--b 直線
     }
-    static Point Projection(const Point& a, const Point& b) {
-        double n = a.norm();
-        return a * (Dot(a, b) / (n * n));
-    }
 };
 istream& operator>>(istream& is, Point& p) {
     is >> p.x >> p.y;
@@ -42,6 +38,12 @@ struct Line {
     Point a, b;
     Line() : a(Point(0, 0)), b(Point(0, 0)) {}
     Line(Point a, Point b) : a(a), b(b) {}
+    Point Projection(const Point& p) const {
+        Point s = b - a,
+              t = p - a;
+        double n = s.norm();
+        return a + s * (Point::Dot(s, t) / (n * n));
+    }
     static Point Intersection(const Line& l, const Line& m) {
         double d = Point::Cross(m.b - m.a, l.b - l.a);
         assert(abs(d) >= EPS); // 線分が平行でないことを確認

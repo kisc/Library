@@ -8,11 +8,10 @@ int main() {
     cin >> P1;
     int q;
     cin >> q;
-    Point P = P1 - P0;
+    Line L(P0, P1);
     for (int i = 0; i < q; i++) {
         cin >> P2;
-        Point Q = P2 - P0;
-        Point T = P0 + Point::Projection(P, Q);
+        Point T = L.Projection(P2);
         printf("%.12lf %.12lf\n", T.x, T.y);
     }
     return 0;
