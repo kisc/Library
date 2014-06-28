@@ -82,7 +82,7 @@ struct Polygon {
     double area() const {
         double Ret = 0;
         for (int i = 0; i < vs.size(); i++) {
-            Ret += Point::Cross(vs[i], vs[(i + 1) % vs.size()]);
+            Ret += Point::Cross(vs[i], vs[next(i)]);
         }
         return Ret * 0.5;
     }
