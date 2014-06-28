@@ -86,4 +86,17 @@ struct Polygon {
         }
         return Ret * 0.5;
     }
+    bool isConvex() {
+        for (int i = 0; i < vs.size(); i++) {
+            Point a = vs[prev(i)], b = vs[i], c = vs[next(i)];
+            if (Point::CCW(a, b, c) != 1) return false;
+        }
+        return true;
+    }
+    int next(int i) const {
+        return (i + 1) % vs.size();
+    }
+    int prev(int i) const {
+        return (i + vs.size() - 1) % vs.size();
+    }
 };
