@@ -24,6 +24,10 @@ struct Point {
         if (b.norm() < c.norm()) return -2;    // a--b--c 直線
         return 0;                              // a--c--b 直線
     }
+    static Point Projection(const Point& a, const Point& b) {
+        double n = a.norm();
+        return a * (Dot(a, b) / (n * n));
+    }
 };
 istream& operator>>(istream& is, Point& p) {
     is >> p.x >> p.y;
