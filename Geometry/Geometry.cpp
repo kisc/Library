@@ -59,7 +59,7 @@ struct Segment : Line {
     Segment() {}
     Segment(Point a, Point b) : Line(a, b) {}
     double length() const { return (b - a).norm(); }
-    bool doesContain(const Point& p) const {
+    bool contains(const Point& p) const {
         return Point::CCW(a, b, p) == 0;
     }
     static bool DoIntersect(const Segment& s, const Segment& t) {

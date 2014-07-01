@@ -9,7 +9,7 @@ int main() {
         cin >> s.a >> s.b;
         Point p;
         cin >> p;
-        cout << s.doesContain(p) << endl;
+        cout << s.contains(p) << endl;
     }
     return 0;
 }
