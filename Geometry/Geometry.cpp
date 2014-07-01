@@ -89,6 +89,25 @@ struct Polygon {
         }
         return Ret * 0.5;
     }
+    bool edgesContain(const Point& p) const {
+        for (int i = 0; i < vs.size(); i++) {
+            Segment s(vs[i], vs[next(i)]);
+            if (s.contains(p)) return true;
+        }
+        return false;
+    }
+    bool contains(const Point& p) const {
+        if (edgesContain(p)) return false;
+        int Count = 0;
+        for (int i = 0; i < vs.size(); i++) {
+            Point p1 = vs[i],
+                  p2 = vs[next(i)];
+            if (p1.y > p2.y) swap(p1, p2);
+            if ( (p1.y - p.y) <= 0 && 0 < (p2.y - p.y) && Point::CCW(p1, p2, p) == 1)
+                Count++;
+        }
+        return Count % 2 == 1;
+    }
     bool isConvex() {
         for (int i = 0; i < vs.size(); i++) {
             Point a = vs[prev(i)], b = vs[i], c = vs[next(i)];
