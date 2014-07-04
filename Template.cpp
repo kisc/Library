@@ -20,6 +20,8 @@
 using namespace std;
 
 const double EPS = 1e-9;
+const double INF = 1e10;
 
 typedef long long Long;
 #define whole(xs) xs.begin(), xs.end()
+#define EQ(a, b) (abs((a) - (b)) < EPS)
