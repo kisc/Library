@@ -88,6 +88,8 @@ struct Segment : Line {
     }
 };
 
+/* 多角形クラス
+ * 頂点はすべて反時計回り */
 struct Polygon {
     vector<Point> vs;
     Polygon(const vector<Point>& vs) : vs(vs) {}
