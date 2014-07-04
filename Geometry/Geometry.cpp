@@ -1,10 +1,13 @@
 struct Point {
     double x, y;
     Point(double x = 0, double y = 0) : x(x), y(y) {}
-    double norm() { return sqrt(x * x + y * y); }
-    Point unit() {
+    double norm() const { return sqrt(x * x + y * y); }
+    Point unit() const {
         double l = norm();
         return Point(x / l, y / l);
+    }
+    bool operator==(const Point& p) const {
+        return x == p.x && y == p.y;
     }
     Point operator+(const Point& p) const { return Point(x + p.x, y + p.y); }
     Point operator-() const { return Point(-x, -y); }
@@ -14,7 +17,7 @@ struct Point {
     static double Distance(const Point& a, const Point& b) {
         return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
     }
-    static double Dot(const Point& a, const Point& b) { return a.x * b.y + a.y * b.x; }
+    static double Dot(const Point& a, const Point& b) { return a.x * b.x + a.y * b.y; }
     static double Cross(const Point& a, const Point& b) { return a.x * b.y - a.y * b.x; }
     static int CCW(Point a, Point b, Point c){
         b = b - a; c = c - a;
@@ -23,6 +26,12 @@ struct Point {
         if (Dot(b, c) < 0) return +2;          // c--a--b 直線
         if (b.norm() < c.norm()) return -2;    // a--b--c 直線
         return 0;                              // a--c--b 直線
+    }
+    static bool CompX(const Point& a, const Point& b) {
+        return a.x == b.x ? a.y < b.y : a.x < b.x;
+    }
+    static bool CompY(const Point& a, const Point& b) {
+        return a.y == b.y ? a.x < b.x : a.y < b.y;
     }
 };
 istream& operator>>(istream& is, Point& p) {
@@ -38,9 +47,111 @@ struct Line {
     Point a, b;
     Line() : a(Point(0, 0)), b(Point(0, 0)) {}
     Line(Point a, Point b) : a(a), b(b) {}
+    Point Projection(const Point& p) const {
+        Point s = b - a,
+              t = p - a;
+        double n = s.norm();
+        return a + s * (Point::Dot(s, t) / (n * n));
+    }
+    Point Reflection(const Point& p) const {
+        Point q = Projection(p);
+        Point v = q - p;
+        return q + v;
+    }
     static Point Intersection(const Line& l, const Line& m) {
         double d = Point::Cross(m.b - m.a, l.b - l.a);
         assert(abs(d) >= EPS); // 線分が平行でないことを確認
         return l.a + (l.b - l.a) * (Point::Cross(m.b - m.a, m.b - l.a) / d);
+    }
+};
+struct Segment : Line {
+    Segment() {}
+    Segment(Point a, Point b) : Line(a, b) {}
+    double length() const { return (b - a).norm(); }
+    bool contains(const Point& p) const {
+        return Point::CCW(a, b, p) == 0;
+    }
+    static bool DoIntersect(const Segment& s, const Segment& t) {
+        return Point::CCW(s.a, s.b, t.a) * Point::CCW(s.a, s.b, t.b) <= 0 &&
+               Point::CCW(t.a, t.b, s.a) * Point::CCW(t.a, t.b, s.b) <= 0;
+    }
+    static double Distance(const Segment& s, const Point& p) {
+        Point q = s.Projection(p);
+        Segment t(p, q);
+        if (DoIntersect(s, t)) return t.length();
+        return min(Point::Distance(s.a, p), Point::Distance(s.b, p));
+    }
+    static double Distance(const Segment& s, const Segment& t) {
+        if (DoIntersect(s, t)) return 0;
+        return min( min(Distance(s, t.a), Distance(s, t.b)),
+                    min(Distance(t, s.a), Distance(t, s.b)) );
+    }
+};
+
+/* 多角形クラス
+ * 頂点はすべて反時計回り */
+struct Polygon {
+    vector<Point> vs;
+    Polygon(const vector<Point>& vs) : vs(vs) {}
+    double area() const {
+        double Ret = 0;
+        for (int i = 0; i < vs.size(); i++) {
+            Ret += Point::Cross(vs[i], vs[next(i)]);
+        }
+        return Ret * 0.5;
+    }
+    bool edgesContain(const Point& p) const {
+        for (int i = 0; i < vs.size(); i++) {
+            Segment s(vs[i], vs[next(i)]);
+            if (s.contains(p)) return true;
+        }
+        return false;
+    }
+    bool contains(const Point& p) const {
+        if (edgesContain(p)) return false;
+        int Count = 0;
+        for (int i = 0; i < vs.size(); i++) {
+            Point p1 = vs[i],
+                  p2 = vs[next(i)];
+            if (p1.y > p2.y) swap(p1, p2);
+            if ( (p1.y - p.y) <= 0 && 0 < (p2.y - p.y) && Point::CCW(p1, p2, p) == 1)
+                Count++;
+        }
+        return Count % 2 == 1;
+    }
+    bool isConvex() {
+        for (int i = 0; i < vs.size(); i++) {
+            Point a = vs[prev(i)], b = vs[i], c = vs[next(i)];
+            if (Point::CCW(a, b, c) != 1) return false;
+        }
+        return true;
+    }
+    int next(int i) const {
+        return (i + 1) % vs.size();
+    }
+    int prev(int i) const {
+        return (i + vs.size() - 1) % vs.size();
+    }
+    /* 与えられた点集合の凸包をかえす.
+     * psは3つ以上の要素を持たねばならない.
+     *
+     * この実装は凸多角形の返上に存在する点も含める.
+     * 凸多角形の頂点のみが必要な場合は 144, 148行目の2つ目の条件を
+     * Point::CCW(Ret[k - 2], Ret[k - 1], ps[i] <= 0)に変更する */
+    static Polygon ConvexHull(vector<Point> ps) {
+        sort(whole(ps), Point::CompX);
+        int N = ps.size();
+        int k = 0;
+        vector<Point> Ret(N * 2);
+        for (int i = 0; i < N; Ret[k++] = ps[i++]) {
+            while (k >= 2 && Point::CCW(Ret[k - 2], Ret[k - 1], ps[i]) == -1)
+                k--;
+        }
+        for (int i = N - 2, t = k + 1; i >= 0; Ret[k++] = ps[i--]) {
+            while (k >= t && Point::CCW(Ret[k - 2], Ret[k - 1], ps[i]) == -1)
+                k--;
+        }
+        Ret.resize(k-1);
+        return Polygon(Ret);
     }
 };
