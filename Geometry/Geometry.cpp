@@ -27,6 +27,12 @@ struct Point {
         if (b.norm() < c.norm()) return -2;    // a--b--c 直線
         return 0;                              // a--c--b 直線
     }
+    static bool CompX(const Point& a, const Point& b) {
+        return a.x == b.x ? a.y < b.y : a.x < b.x;
+    }
+    static bool CompY(const Point& a, const Point& b) {
+        return a.y == b.y ? a.x < b.x : a.y < b.y;
+    }
 };
 istream& operator>>(istream& is, Point& p) {
     is >> p.x >> p.y;
@@ -123,5 +129,27 @@ struct Polygon {
     }
     int prev(int i) const {
         return (i + vs.size() - 1) % vs.size();
+    }
+    /* 与えられた点集合の凸包をかえす.
+     * psは3つ以上の要素を持たねばならない.
+     *
+     * この実装は凸多角形の返上に存在する点も含める.
+     * 凸多角形の頂点のみが必要な場合は 144, 148行目の2つ目の条件を
+     * Point::CCW(Ret[k - 2], Ret[k - 1], ps[i] <= 0)に変更する */
+    static Polygon ConvexHull(vector<Point> ps) {
+        sort(whole(ps), Point::CompX);
+        int N = ps.size();
+        int k = 0;
+        vector<Point> Ret(N * 2);
+        for (int i = 0; i < N; Ret[k++] = ps[i++]) {
+            while (k >= 2 && Point::CCW(Ret[k - 2], Ret[k - 1], ps[i]) == -1)
+                k--;
+        }
+        for (int i = N - 2, t = k + 1; i >= 0; Ret[k++] = ps[i--]) {
+            while (k >= t && Point::CCW(Ret[k - 2], Ret[k - 1], ps[i]) == -1)
+                k--;
+        }
+        Ret.resize(k-1);
+        return Polygon(Ret);
     }
 };
