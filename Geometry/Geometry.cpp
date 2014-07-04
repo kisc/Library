@@ -6,6 +6,9 @@ struct Point {
         double l = norm();
         return Point(x / l, y / l);
     }
+    bool operator==(const Point& p) const {
+        return x == p.x && y == p.y;
+    }
     Point operator+(const Point& p) const { return Point(x + p.x, y + p.y); }
     Point operator-() const { return Point(-x, -y); }
     Point operator-(const Point& p) const { return Point(x - p.x, y - p.y); }
