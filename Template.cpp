@@ -24,3 +24,4 @@ const double EPS = 1e-9;
 
 typedef long long Long;
 #define whole(xs) xs.begin(), xs.end()
+#define uniq(xs) (xs.erase(unique(xs.begin(), xs.end()), xs.end()))
