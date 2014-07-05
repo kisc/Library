@@ -14,6 +14,7 @@
 #include <queue>
 #include <set>
 #include <sstream>
+#include <stack>
 #include <utility>
 #include <vector>
 
@@ -25,3 +26,4 @@ const double INF = 1e10;
 typedef long long Long;
 #define whole(xs) xs.begin(), xs.end()
 #define EQ(a, b) (abs((a) - (b)) < EPS)
+#define uniq(xs) (xs.erase(unique(xs.begin(), xs.end()), xs.end()))
