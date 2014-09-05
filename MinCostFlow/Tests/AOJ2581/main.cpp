@@ -44,11 +44,11 @@ int main() {
      */
     static MinCostFlow mcf(graph_size());
     repeat (i,N) repeat (j,N) if (P[i]-1 != j) {
-        mcf.add_edge(A(i), B(j), 1, P[i] * abs(i - j));
+        mcf.addEdge(A(i), B(j), 1, P[i] * abs(i - j));
     }
     repeat (i,N) {
-        mcf.add_edge(S(), A(i), 1, 0);
-        mcf.add_edge(B(i), T(), 1, 0);
+        mcf.addEdge(S(), A(i), 1, 0);
+        mcf.addEdge(T(), 1, 0);
     }
-    cout << mcf.run_destructive(S(), T(), N) << endl;
+    cout << mcf.solve(S(), T(), N) << endl;
 }

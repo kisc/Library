@@ -1,36 +1,23 @@
-#include <iostream>
-#include <vector>
-#include <queue>
-using namespace std;
-typedef pair<int,int> pii;
-#define repeat(i,n) for (int i = 0; i < (n); ++i)
-
 class MinCostFlow {
 public:
     struct edge_t { int to, cap, cost, rev; };
-    static int infinity;
 
     MinCostFlow() : graph() {}
     MinCostFlow(int n) : graph(n) {}
 
     vector<vector<edge_t> > graph; // adjacency_list
 
-    int add_vertex() {
-        graph.push_back(vector<edge_t>());
-        return graph.size()-1;
-    }
-
-    void add_edge(int from, int to, int cap, int cost) {
+    void addEdge(int from, int to, int cap, int cost) {
         graph[from].push_back((edge_t){   to, cap, cost, (int)graph[  to].size() });
         graph[  to].push_back((edge_t){ from,  0, -cost, (int)graph[from].size() - 1 });
     }
 
-    int run_destructive(int s, int t, int f) {
+    int solve(int s, int t, int f) {
         int result = 0;
         vector<int> potential(graph.size(), 0);
         while (0 < f) {
             // update potential using dijkstra
-            vector<int> distance(graph.size(), infinity); // minimum -
+            vector<int> distance(graph.size(), INF); // minimum -
             vector<int> prev_v(graph.size()); // constitute a single-linked-list represents the flow-path
             vector<int> prev_e(graph.size());
             { // initialize distance and prev_{v,e}
@@ -56,7 +43,7 @@ public:
                     }
                 }
             }
-            if (distance[t] == infinity) return -1; // no such flow
+            if (distance[t] == INF) return -1; // no such flow
             repeat (v,(int)graph.size()) potential[v] += distance[v];
             {
                 int d = f;
@@ -76,7 +63,6 @@ public:
         return result;
     }
 };
-int MinCostFlow::infinity = 1e9;
 ostream & operator << (ostream & out, const MinCostFlow & mcf) {
     repeat (i,(int)mcf.graph.size()) repeat (j,(int)mcf.graph[i].size()) {
         if (i) out << endl;
