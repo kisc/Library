@@ -17,7 +17,7 @@ public:
         vector<int> potential(graph.size(), 0);
         while (0 < f) {
             // update potential using dijkstra
-            vector<int> distance(graph.size(), INF); // minimum -
+            vector<int> distance(graph.size(), 1e9); // minimum -
             vector<int> prev_v(graph.size()); // constitute a single-linked-list represents the flow-path
             vector<int> prev_e(graph.size());
             { // initialize distance and prev_{v,e}
@@ -43,7 +43,7 @@ public:
                     }
                 }
             }
-            if (distance[t] == INF) return -1; // no such flow
+            if (distance[t] == 1e9) return -1; // no such flow
             repeat (v,(int)graph.size()) potential[v] += distance[v];
             {
                 int d = f;

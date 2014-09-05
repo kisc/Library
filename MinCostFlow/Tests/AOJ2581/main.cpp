@@ -1,7 +1,4 @@
-#include <iostream>
-#include <cmath>
-using namespace std;
-#define repeat(i,n) for (int i = 0; i < (n); ++i)
+#include "../../../Template.cpp"
 #include "../../MinCostFlow.cpp"
 
 #define MAX_N (100)
@@ -48,7 +45,7 @@ int main() {
     }
     repeat (i,N) {
         mcf.addEdge(S(), A(i), 1, 0);
-        mcf.addEdge(T(), 1, 0);
+        mcf.addEdge(B(i), T(), 1, 0);
     }
     cout << mcf.solve(S(), T(), N) << endl;
 }
