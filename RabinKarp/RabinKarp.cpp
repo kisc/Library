@@ -5,45 +5,60 @@
 // hash(str[k..k+m-1]) = ( c_k*b^{m-1} + c_{k+1}*b^{m-2} +         ... + c_{k+m-1}*b^0               ) mod h
 // hash(str[k+1..k+m]) = ( hash(str[k..k+m-1])*b - str[k]*b^m + str[k+m] ) mod h
 
-struct RabinKarp {
-    static const ULong base = 1e9+7; // mod is 2^64 (overflow)
+namespace RabinKarp {
+    typedef unsigned long long hash_t;
+    static const hash_t base = 1e9+7; // mod is 2^64 (overflow)
 
-    // O(n)
-    ULong rollingHash(const string & s) const {
-        ULong a = 0;
+    hash_t rollingHash(const string & s) {
+        hash_t a = 0;
         repeat (i,(int)s.length()) a = a * base + s[i];
         return a;
     }
 
-    // O(1)
-    ULong roll(ULong a, char out, char in, ULong base_to_len) const {
-        return a * base - out * base_to_len + in;
-    }
-    ULong baseTo(int n) const {
-        ULong c = 1;
-        repeat (i,n) c *= base;
-        return c;
+    hash_t baseTo(int n) {
+        static map<int,hash_t> memo;
+        const map<int,hash_t>::iterator it = memo.find(n);
+        if (it != memo.end()) return it->second;
+        hash_t x;
+        if (n == 0) {
+            x = 1;
+        } else {
+            x = baseTo(n >> 1);
+            x *= x;
+            if (n & 1) x *= base;
+        }
+        memo.insert(make_pair(n,x));
+        return x;
     }
 
-    // returns the index of `a' and the index of the sub-string in `bs', of -1 * -1.
-    // required: the length of strings in `bs' are all the same.
-    pair<int,int> findSet(const string & a, const vector<string> & bs) const {
+    hash_t roll(hash_t a, char out, char in, int n) {
+        return a * base - out * baseTo(n) + in;
+    }
+    hash_t pushBack(hash_t a, char c) {
+        return a * base + c;
+    }
+    vector<hash_t> generateTable(const string & s) {
+        vector<hash_t> h(s.length()+1);
+        h[0] = 0;
+        repeat (i,(int)s.length()) h[i+1] = h[i] * base + s[i];
+        return h;
+    }
+    hash_t subhash(const vector<hash_t> & h, int l, int r) {
+        return h[r] - h[l] * baseTo(r-l);
+    }
+
+    // find sub-string `b' of `a', and return the index or `-1' as not found
+    int find(const string & a, const string & b) {
         const int al = a.length();
-        const int bn = bs.size();
-        if (bs.size() == 0) return make_pair(-1,-1);
-        const int bl = bs[0].length();
-        vector<ULong> bhs(bn); repeat (i,bn) bhs[i] = rollingHash(bs[i]);
-        ULong ah = rollingHash(a.substr(0,bl));
-        const ULong base_to_len = baseTo(bl);
-
+        const int bl = b.length();
+        const hash_t bh = rollingHash(b);
+              hash_t ah = rollingHash(a.substr(0,bl));
         repeat (i, al - (bl - 1)) {
-            repeat (j,bn) {
-                if (ah == bhs[j] and a.substr(i,bl) == bs[j]) return make_pair(i,j);
-            }
-            if (i + bl < al) {
-                ah = roll(ah, a[i], a[i+bl], base_to_len);
+            if (ah == bh and a.substr(i,bl) == b) return i; // equal on hash -> verify
+            if (i + bl < al) { // there is next loop
+                ah = ah * base - a[i] * baseTo(bl) + a[i+bl]; // roll
             }
         }
-        return make_pair(-1,-1);
+        return -1;
     }
 };
