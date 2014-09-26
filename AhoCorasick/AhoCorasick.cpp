@@ -70,7 +70,7 @@ struct AhoCorasick {
                 Trie* r = t->fail;
                 while (r->next[c] == NULL) r = r->fail;
                 t->next[c]->fail = r->next[c];
-                vector<int> accept = t->next[c]->accept;
+                vector<int>& accept = t->next[c]->accept;
                 accept.insert(accept.end(), whole(r->next[c]->accept));
             }
         }
