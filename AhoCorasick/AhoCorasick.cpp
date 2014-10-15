@@ -36,6 +36,12 @@ struct Trie {
 };
 Trie* Trie::root;
 
+/* 実用上問題にはならないが, instanceを複数同時に作るとSEGVする.
+ * つまり
+ * while (...) { AhoCorasick a(...); ... }
+ * は良いが,
+ * AhoCorasick a(...); while (...) { a = AhoCorasick(...); ... }
+ * は落ちる. */
 struct AhoCorasick {
     Trie* PMA;
     vector<string> patterns;
