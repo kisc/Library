@@ -29,3 +29,5 @@ typedef pair<int,int> pii;
 #define EQ(a, b) (abs((a) - (b)) < EPS)
 #define uniq(xs) (xs.erase(unique(xs.begin(), xs.end()), xs.end()))
 #define repeat(i,n) for (int i = 0; i < (n); ++i)
+#define repeat_from(i,m,n) for (int i = (m); i < (n); ++i)
+#define repeat_rev(i,n) for (int i = (n)-1; 0 <= i; --i)
